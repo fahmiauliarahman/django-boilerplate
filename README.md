@@ -36,9 +36,9 @@ Run the development server:
 uv run python manage.py runserver
 ```
 
-Open http://127.0.0.1:8000/.
+Open <http://127.0.0.1:8000/>.
 
-Admin lives at http://127.0.0.1:8000/admin/.
+Admin lives at <http://127.0.0.1:8000/admin/>.
 
 Create an admin user when needed:
 
@@ -79,6 +79,7 @@ uv.lock          Locked dependency versions
 
 ## Notes
 
-This project uses Django's default local settings: `DEBUG=True`, SQLite, and a development secret key.
+This project uses Django's default local settings: `DEBUG=True`,
+SQLite, and a development secret key.
 
 Do not use these settings directly for production.
