@@ -183,3 +183,69 @@ else:
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+
+UNFOLD = {
+    "SITE_TITLE": "Custom suffix in <title> tag",
+    "SITE_HEADER": "Appears in sidebar at the top",
+    "SITE_SUBHEADER": "Appears under SITE_HEADER",
+    "SITE_URL": "/",
+    "SITE_SYMBOL": "diamond",  # symbol from icon set https://fonts.google.com/icons
+    "SHOW_VIEW_ON_SITE": True,  # show/hide "View on site" button, default: True
+    "SHOW_BACK_BUTTON": False,  # show/hide "Back" button on changeform in header, default: False
+    "SHOW_UI_WARNINGS": False,  # show/hide warnings in UI, default: False
+    "ENVIRONMENT": "core.utils.environment.get_admin_environment",  # environment name in header
+    "ENVIRONMENT_TITLE_PREFIX": "[DEV] "
+    if DEBUG
+    else "[PROD] ",  # prefix for environment name in header
+    "BORDER_RADIUS": "6px",
+    "COLORS": {
+        "base": {
+            "50": "oklch(98.5% .002 247.839)",
+            "100": "oklch(96.7% .003 264.542)",
+            "200": "oklch(92.8% .006 264.531)",
+            "300": "oklch(87.2% .01 258.338)",
+            "400": "oklch(70.7% .022 261.325)",
+            "500": "oklch(55.1% .027 264.364)",
+            "600": "oklch(44.6% .03 256.802)",
+            "700": "oklch(37.3% .034 259.733)",
+            "800": "oklch(27.8% .033 256.848)",
+            "900": "oklch(21% .034 264.665)",
+            "950": "oklch(13% .028 261.692)",
+        },
+        "primary": {
+            "50": "oklch(97.7% .014 308.299)",
+            "100": "oklch(94.6% .033 307.174)",
+            "200": "oklch(90.2% .063 306.703)",
+            "300": "oklch(82.7% .119 306.383)",
+            "400": "oklch(71.4% .203 305.504)",
+            "500": "oklch(62.7% .265 303.9)",
+            "600": "oklch(55.8% .288 302.321)",
+            "700": "oklch(49.6% .265 301.924)",
+            "800": "oklch(43.8% .218 303.724)",
+            "900": "oklch(38.1% .176 304.987)",
+            "950": "oklch(29.1% .149 302.717)",
+        },
+        "font": {
+            "subtle-light": "var(--color-base-500)",  # text-base-500
+            "subtle-dark": "var(--color-base-400)",  # text-base-400
+            "default-light": "var(--color-base-600)",  # text-base-600
+            "default-dark": "var(--color-base-300)",  # text-base-300
+            "important-light": "var(--color-base-900)",  # text-base-900
+            "important-dark": "var(--color-base-100)",  # text-base-100
+        },
+    },
+    "EXTENSIONS": {
+        "modeltranslation": {
+            "flags": {
+                "en": "🇬🇧",
+                "fr": "🇫🇷",
+                "nl": "🇧🇪",
+            },
+        },
+    },
+    "SIDEBAR": {
+        "show_search": False,  # Search in applications and models names
+        "show_all_applications": False,  # Dropdown with all applications and models
+    },
+}
