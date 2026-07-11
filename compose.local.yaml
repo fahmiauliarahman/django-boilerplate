@@ -12,6 +12,7 @@ services:
       EMAIL_PORT: "1025"
       EMAIL_USE_TLS: "False"
       EMAIL_USE_SSL: "False"
+      SITE_URL: https://localhost:8000
 
   certificates:
     image: alpine/openssl@sha256:3da6a24cdaa2f2ac8ef4defb322249fae6159983104653a9e5312f5b75dac7af

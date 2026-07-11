@@ -50,3 +50,18 @@ docker compose -f compose.yaml -f compose.prod.yaml exec web .venv/bin/python ma
 ```
 
 Configure SPF, DKIM, and DMARC records through the provider before sending production mail.
+
+## New User Password Setup
+
+Creating a user with an email address automatically sends a one-time password setup link after the database transaction commits.
+Set `SITE_URL` to the public application origin so generated links use the correct domain:
+
+```dotenv
+SITE_URL=https://example.com
+```
+
+For `make run`, use `SITE_URL=http://127.0.0.1:8000`.
+The local Compose override sets its own HTTPS URL automatically.
+
+Users without an email address are created without sending a message.
+Passwords are never included in email.

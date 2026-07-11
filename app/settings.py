@@ -33,6 +33,7 @@ env = environ.Env(
     EMAIL_USE_TLS=(bool, False),
     EMAIL_USE_SSL=(bool, False),
     DEFAULT_FROM_EMAIL=(str, "webmaster@localhost"),
+    SITE_URL=(str, "http://127.0.0.1:8000"),
 )
 
 # reading .env file
@@ -210,6 +211,7 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = env("EMAIL_USE_TLS")
 EMAIL_USE_SSL = env("EMAIL_USE_SSL")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+SITE_URL = env("SITE_URL").rstrip("/")
 
 STORAGE_PROVIDER = env("STORAGE_PROVIDER")
 
