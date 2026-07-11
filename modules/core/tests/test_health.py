@@ -9,24 +9,26 @@ from modules.samples.models import Book
 
 class StarterTests(TestCase):
     def test_root_redirects_to_admin_login(self):
-        response = self.client.get("/")
+        response = self.client.get("/", secure=True)
 
-        self.assertRedirects(response, "/login/?next=/")
+        self.assertRedirects(
+            response, "/login/?next=/", fetch_redirect_response=False
+        )
 
     def test_admin_login_is_available(self):
-        response = self.client.get("/login/")
+        response = self.client.get("/login/", secure=True)
 
         self.assertEqual(response.status_code, 200)
 
     def test_health_reports_ready(self):
-        response = self.client.get(reverse("health"))
+        response = self.client.get(reverse("health"), secure=True)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"status": "ok"})
 
     @patch("modules.core.views.connection.ensure_connection", side_effect=DatabaseError)
     def test_health_reports_database_failure(self, ensure_connection):
-        response = self.client.get(reverse("health"))
+        response = self.client.get(reverse("health"), secure=True)
 
         self.assertEqual(response.status_code, 503)
         self.assertEqual(response.json(), {"status": "unavailable"})

@@ -4,17 +4,24 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
+      DEBUG: "False"
       POSTGRES_HOST: db
-    command: sh -c ".venv/bin/python manage.py migrate && .venv/bin/python manage.py collectstatic --noinput && .venv/bin/gunicorn --config gunicorn.conf.py app.wsgi:application --bind 0.0.0.0:8000"
-    ports:
-      - "8000:8000"
+    command: sh -c ".venv/bin/python manage.py migrate && .venv/bin/python manage.py collectstatic --noinput && .venv/bin/gunicorn --config gunicorn.conf.py app.wsgi:application --bind 0.0.0.0:8001"
+    expose:
+      - "8001"
     volumes:
       - media:/app/media
     depends_on:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", ".venv/bin/python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/')"]
+      test:
+        [
+          "CMD",
+          ".venv/bin/python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen(urllib.request.Request('http://localhost:8001/health/', headers={'X-Forwarded-Proto': 'https'}))",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,7 +35,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s

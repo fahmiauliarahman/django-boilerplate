@@ -4,13 +4,50 @@ This setup runs Django with Gunicorn, serves static files through WhiteNoise, an
 
 Choose Docker Compose or a native host deployment.
 
-## Docker Compose
+## Compose Files
+
+- `compose.yaml` defines shared Django and PostgreSQL services.
+- `compose.local.yaml` adds self-signed HTTPS on local port 8000.
+- `compose.prod.yaml` adds domain-based Nginx on public ports 80 and 443.
+
+Always combine the shared file with exactly one environment-specific file.
+
+## Local Production Simulation
+
+This mode runs the production image, Gunicorn, PostgreSQL, Nginx, HTTPS redirects, and Django production security settings.
+It does not require Nginx or OpenSSL on the host.
+
+Ensure `.env` trusts both local HTTPS origins:
+
+```dotenv
+CSRF_TRUSTED_ORIGINS=https://localhost:8000,https://127.0.0.1:8000
+```
+
+Start the stack:
+
+```sh
+docker compose -f compose.yaml -f compose.local.yaml up --build -d
+```
+
+Open `https://localhost:8000` and accept the self-signed certificate warning.
+Nginx terminates TLS and proxies requests to Gunicorn without requiring Nginx or OpenSSL on the host.
+
+View logs or stop the local stack:
+
+```sh
+docker compose -f compose.yaml -f compose.local.yaml logs -f nginx web
+docker compose -f compose.yaml -f compose.local.yaml down
+```
+
+## Docker Compose Production
 
 ### Requirements
 
 - Docker Engine
 - Docker Compose v2
-- A server with ports 80 and 443 available for a reverse proxy
+- A server with public ports 80 and 443
+- A domain whose DNS records point to the server
+- A trusted TLS certificate for that domain
 
 ### Configure
 
@@ -25,6 +62,8 @@ Set these values before deployment:
 ```dotenv
 DEBUG=False
 SECRET_KEY=<generate-a-long-random-value>
+DOMAIN=example.com
+TLS_CERT_DIR=/etc/learn-django/certs
 ALLOWED_HOSTS=example.com,www.example.com
 CSRF_TRUSTED_ORIGINS=https://example.com,https://www.example.com
 POSTGRES_DB_NAME=learn_django
@@ -37,33 +76,49 @@ STORAGE_PROVIDER=local
 
 Keep `.env` private and never commit it.
 
+Place the trusted certificate files from your certificate provider in `TLS_CERT_DIR` on the server:
+
+```text
+/etc/learn-django/certs/fullchain.pem
+/etc/learn-django/certs/privkey.pem
+```
+
+Certificate files are ignored by Git.
+Renew them through the certificate provider or deployment platform before they expire.
+
 ### Start
 
 Build and start the services:
 
 ```sh
-docker compose up --build -d
+docker compose -f compose.yaml -f compose.prod.yaml up --build -d
 ```
 
-Compose waits for PostgreSQL, applies migrations, then starts Gunicorn on port 8000.
+Compose waits for PostgreSQL, applies migrations, starts Gunicorn on internal port 8001, and exposes Nginx on ports 80 and 443.
+
+Verify HTTPS and application readiness:
+
+```sh
+curl --fail https://example.com/health/
+```
 
 Create an administrator:
 
 ```sh
-docker compose exec web .venv/bin/python manage.py createsuperuser
+docker compose -f compose.yaml -f compose.prod.yaml exec web .venv/bin/python manage.py createsuperuser
 ```
 
 Run Django's production checks:
 
 ```sh
-docker compose exec web .venv/bin/python manage.py check --deploy
+docker compose -f compose.yaml -f compose.prod.yaml exec web .venv/bin/python manage.py check --deploy
 ```
 
 ### HTTPS
 
-Place Caddy, Nginx, or another TLS-terminating reverse proxy in front of port 8000.
-Forward the original `Host` header and `X-Forwarded-Proto` header.
-Do not expose port 8000 publicly after the proxy is configured.
+The production override terminates TLS in Nginx and forwards the original `Host` and HTTPS scheme to Django.
+Only ports 80 and 443 are published.
+Gunicorn and PostgreSQL remain private inside the Compose network.
 
 ### Update
 
@@ -71,7 +126,7 @@ Pull the new code and recreate the web service:
 
 ```sh
 git pull
-docker compose up --build -d
+docker compose -f compose.yaml -f compose.prod.yaml up --build -d
 ```
 
 Migrations run automatically before Gunicorn starts.
@@ -81,19 +136,19 @@ Migrations run automatically before Gunicorn starts.
 View logs:
 
 ```sh
-docker compose logs -f web
+docker compose -f compose.yaml -f compose.prod.yaml logs -f nginx web
 ```
 
 Stop services without deleting data:
 
 ```sh
-docker compose down
+docker compose -f compose.yaml -f compose.prod.yaml down
 ```
 
 Back up PostgreSQL:
 
 ```sh
-docker compose exec -T db pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB_NAME" > backup.sql
+docker compose -f compose.yaml -f compose.prod.yaml exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' > backup.sql
 ```
 
 Named volumes retain PostgreSQL and local uploaded media.

@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim
+FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim AS base
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -9,6 +9,21 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 COPY pyproject.toml uv.lock ./
+
+FROM base AS development
+
+RUN uv sync --frozen
+
+COPY . .
+
+RUN useradd --create-home app && chown -R app:app /app
+USER app
+
+EXPOSE 8001
+CMD [".venv/bin/python", "manage.py", "runserver", "0.0.0.0:8001"]
+
+FROM base AS production
+
 RUN uv sync --frozen --no-dev --group prod
 
 COPY . .
@@ -16,5 +31,5 @@ COPY . .
 RUN useradd --create-home app && chown -R app:app /app
 USER app
 
-EXPOSE 8000
-CMD ["sh", "-c", ".venv/bin/python manage.py collectstatic --noinput && .venv/bin/gunicorn --config gunicorn.conf.py app.wsgi:application --bind 0.0.0.0:8000"]
+EXPOSE 8001
+CMD ["sh", "-c", ".venv/bin/python manage.py collectstatic --noinput && .venv/bin/gunicorn --config gunicorn.conf.py app.wsgi:application --bind 0.0.0.0:8001"]
