@@ -181,7 +181,7 @@ Type=simple
 User=learn-django
 Group=learn-django
 WorkingDirectory=/srv/learn-django
-ExecStart=/srv/learn-django/.venv/bin/gunicorn app.wsgi:application --bind 127.0.0.1:8000
+ExecStart=/srv/learn-django/.venv/bin/gunicorn --config gunicorn.conf.py app.wsgi:application --bind 127.0.0.1:8000
 Restart=on-failure
 
 [Install]

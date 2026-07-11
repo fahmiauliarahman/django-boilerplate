@@ -8,7 +8,7 @@ Add features only when the project needs them.
 - [x] Continuous integration
 - [x] Health check endpoint
 - [x] Starter test suite
-- [ ] Structured logging
+- [x] Structured logging
 - [ ] Backup and restore commands
 - [ ] Development Compose override, if needed
 - [ ] Authentication example, when requirements exist

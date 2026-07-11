@@ -17,4 +17,4 @@ RUN useradd --create-home app && chown -R app:app /app
 USER app
 
 EXPOSE 8000
-CMD ["sh", "-c", ".venv/bin/python manage.py collectstatic --noinput && .venv/bin/gunicorn app.wsgi:application --bind 0.0.0.0:8000"]
+CMD ["sh", "-c", ".venv/bin/python manage.py collectstatic --noinput && .venv/bin/gunicorn --config gunicorn.conf.py app.wsgi:application --bind 0.0.0.0:8000"]
