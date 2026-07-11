@@ -24,6 +24,8 @@ env = environ.Env(
     DEBUG=(bool, False),
     STORAGE_PROVIDER=(str, "local"),
     AWS_S3_ENDPOINT_URL=(str, None),
+    ALLOWED_HOSTS=(list, ["localhost", "127.0.0.1"]),
+    CSRF_TRUSTED_ORIGINS=(list, []),
 )
 
 # reading .env file
@@ -33,7 +35,16 @@ SECRET_KEY = env("SECRET_KEY")
 
 DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env("ALLOWED_HOSTS")
+CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_SSL_REDIRECT = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
 
 
 # Application definition
@@ -55,23 +66,28 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "debug_toolbar",
-    "django_cleanup.apps.CleanupConfig",
     "storages",
-    "core",
-    "samples",  # sample app, optional
+    "modules.core",
+    "modules.samples",  # sample app, optional
+    "django_cleanup.apps.CleanupConfig",
 ]
+
+if DEBUG:
+    INSTALLED_APPS.append("debug_toolbar")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
+
+if DEBUG:
+    MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
 
 ROOT_URLCONF = "app.urls"
 
@@ -141,6 +157,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 ADMINS = [(env("ADMIN_NAME"), env("ADMIN_EMAIL"))]
 
@@ -165,7 +182,7 @@ if STORAGE_PROVIDER == "s3":
             },
         },
         "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
         },
     }
 else:
@@ -175,7 +192,7 @@ else:
             "BACKEND": "django.core.files.storage.FileSystemStorage",
         },
         "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
         },
     }
 
@@ -194,7 +211,7 @@ UNFOLD = {
     "SHOW_VIEW_ON_SITE": True,  # show/hide "View on site" button, default: True
     "SHOW_BACK_BUTTON": False,  # show/hide "Back" button on changeform in header, default: False
     "SHOW_UI_WARNINGS": False,  # show/hide warnings in UI, default: False
-    "ENVIRONMENT": "core.utils.environment.get_admin_environment",  # environment name in header
+    "ENVIRONMENT": "modules.core.utils.environment.get_admin_environment",  # environment name in header
     "ENVIRONMENT_TITLE_PREFIX": "[DEV] "
     if DEBUG
     else "[PROD] ",  # prefix for environment name in header

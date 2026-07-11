@@ -72,6 +72,7 @@ make run PORT=8080
 app/             Django project package
 app/settings.py  Django settings
 app/urls.py      Root URL configuration
+modules/         Feature modules
 manage.py        Django management entrypoint
 pyproject.toml   Project metadata and dependencies
 uv.lock          Locked dependency versions
@@ -83,3 +84,9 @@ This project uses Django's default local settings: `DEBUG=True`,
 SQLite, and a development secret key.
 
 Do not use these settings directly for production.
+
+## Documentation
+
+- [Deploy with Docker Compose](docs/deployment.md)
+- [Extend the boilerplate](docs/extending.md)
+- [Boilerplate roadmap](docs/roadmap.md)

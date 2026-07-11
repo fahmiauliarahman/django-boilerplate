@@ -12,6 +12,7 @@ dependencies = [
     "django-unfold>=0.100.0",
     "pillow>=12.3.0",
     "psycopg2-binary>=2.9.12",
+    "whitenoise>=6.11.0",
 ]
 
 [dependency-groups]

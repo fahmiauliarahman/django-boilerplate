@@ -25,7 +25,7 @@ help:
 		'  make deploy-check       Run deployment checks' \
 		'  make collectstatic      Collect static files' \
 		'  make clean              Remove Python caches' \
-		'  make create-app NAME=x  Remove Python caches'
+		'  make create-app NAME=x  Create a package-based module'
 
 install sync:
 	uv sync
@@ -67,8 +67,7 @@ clean:
 
 create-app:
 	@if [ -z "$(NAME)" ]; then \
-		echo "❌ Error: You must specify a module name. Usage: make create-app NAME=my_module"; \
+		echo "Error: specify a module name. Usage: make create-app NAME=my_module"; \
 		exit 1; \
 	fi
-	$(MANAGE) startapp $(NAME)
-	@echo "✅ Django module '$(NAME)' created successfully!"
+	$(PYTHON) scripts/create_module.py $(NAME)
