@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      ADMIN_NAME: CI
+      ADMIN_EMAIL: ci@example.com
+      DEBUG: "True"
+      SECRET_KEY: ci-only-secret-key
+      ALLOWED_HOSTS: localhost,127.0.0.1,testserver
+      CSRF_TRUSTED_ORIGINS: http://localhost
+      TIME_ZONE: UTC
+      POSTGRES_DB_NAME: learn_django
+      POSTGRES_USER: learn_django
+      POSTGRES_PASSWORD: learn_django
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_PORT: "5432"
+      STORAGE_PROVIDER: local
+
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: learn_django
+          POSTGRES_USER: learn_django
+          POSTGRES_PASSWORD: learn_django
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U learn_django -d learn_django"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Check Django
+        run: uv run python manage.py check
+
+      - name: Run tests
+        run: uv run python manage.py test
+
+      - name: Check migrations
+        run: uv run python manage.py makemigrations --check --dry-run
+
+      - name: Validate Compose
+        run: docker compose config --quiet
+
+      - name: Build production image
+        run: docker build --tag learn-django:ci .

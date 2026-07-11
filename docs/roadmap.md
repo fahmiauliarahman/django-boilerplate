@@ -3,6 +3,17 @@
 This document lists recommended additions to the Django boilerplate in priority order.
 Add features only when the project needs them.
 
+## Progress
+
+- [x] Continuous integration
+- [x] Health check endpoint
+- [x] Starter test suite
+- [ ] Structured logging
+- [ ] Backup and restore commands
+- [ ] Development Compose override, if needed
+- [ ] Authentication example, when requirements exist
+- [ ] API example, when requirements exist
+
 ## 1. Continuous Integration
 
 Add a CI workflow that runs for every pull request and protected branch update.
@@ -33,7 +44,7 @@ Complete when Docker can distinguish a running process from an application ready
 
 ## 3. Starter Test Suite
 
-The repository currently contains test files but no runnable tests.
+The repository contains a runnable starter test suite.
 
 Add small tests covering:
 
