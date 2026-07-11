@@ -6,7 +6,7 @@ Small Django learning project.
 
 - Python 3.14
 - Django 6.0
-- SQLite for local development
+- PostgreSQL 18
 - uv for dependency management
 - mise for local Python version pinning
 
@@ -80,13 +80,13 @@ uv.lock          Locked dependency versions
 
 ## Notes
 
-This project uses Django's default local settings: `DEBUG=True`,
-SQLite, and a development secret key.
+Local settings use `DEBUG=True`, PostgreSQL, and a development secret key.
 
 Do not use these settings directly for production.
 
 ## Documentation
 
 - [Deploy with Docker Compose](docs/deployment.md)
+- [Configure email](docs/email.md)
 - [Extend the boilerplate](docs/extending.md)
 - [Boilerplate roadmap](docs/roadmap.md)

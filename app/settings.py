@@ -26,6 +26,13 @@ env = environ.Env(
     AWS_S3_ENDPOINT_URL=(str, None),
     ALLOWED_HOSTS=(list, ["localhost", "127.0.0.1"]),
     CSRF_TRUSTED_ORIGINS=(list, []),
+    EMAIL_HOST=(str, "localhost"),
+    EMAIL_PORT=(int, 1025),
+    EMAIL_HOST_USER=(str, ""),
+    EMAIL_HOST_PASSWORD=(str, ""),
+    EMAIL_USE_TLS=(bool, False),
+    EMAIL_USE_SSL=(bool, False),
+    DEFAULT_FROM_EMAIL=(str, "webmaster@localhost"),
 )
 
 # reading .env file
@@ -194,6 +201,15 @@ STATICFILES_BACKEND = (
 )
 
 ADMINS = [(env("ADMIN_NAME"), env("ADMIN_EMAIL"))]
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_PORT = env("EMAIL_PORT")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = env("EMAIL_USE_TLS")
+EMAIL_USE_SSL = env("EMAIL_USE_SSL")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
 
 STORAGE_PROVIDER = env("STORAGE_PROVIDER")
 
