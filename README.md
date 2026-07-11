@@ -38,7 +38,7 @@ uv run python manage.py runserver
 
 Open <http://127.0.0.1:8000/>.
 
-Admin lives at <http://127.0.0.1:8000/admin/>.
+Admin lives at <http://127.0.0.1:8000/>.
 
 Create an admin user when needed:
 

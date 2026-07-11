@@ -147,10 +147,12 @@ Include it from `app/urls.py`:
 
 ```python
 urlpatterns = [
-    path("admin/", admin.site.urls),
     path("blog/", include("modules.blog.urls")),
+    path("", admin.site.urls),
 ]
 ```
+
+Keep feature URLs before the root admin route because Django admin has a final catch-all view.
 
 ## 7. Add a Template
 

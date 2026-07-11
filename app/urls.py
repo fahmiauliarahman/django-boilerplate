@@ -21,7 +21,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("", admin.site.urls),
 ]
 
 # Serve media files locally during development if DEBUG is True
