@@ -15,3 +15,12 @@ wheels/
 
 # Database
 *.sqlite3
+
+.env
+.DS_STORE
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+
