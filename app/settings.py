@@ -158,6 +158,11 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_BACKEND = (
+    "django.contrib.staticfiles.storage.StaticFilesStorage"
+    if DEBUG
+    else "whitenoise.storage.CompressedManifestStaticFilesStorage"
+)
 
 ADMINS = [(env("ADMIN_NAME"), env("ADMIN_EMAIL"))]
 
@@ -182,7 +187,7 @@ if STORAGE_PROVIDER == "s3":
             },
         },
         "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+            "BACKEND": STATICFILES_BACKEND,
         },
     }
 else:
@@ -192,7 +197,7 @@ else:
             "BACKEND": "django.core.files.storage.FileSystemStorage",
         },
         "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+            "BACKEND": STATICFILES_BACKEND,
         },
     }
 

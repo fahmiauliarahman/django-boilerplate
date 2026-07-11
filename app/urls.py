@@ -20,7 +20,10 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from modules.core.views import health
+
 urlpatterns = [
+    path("health/", health, name="health"),
     path("", admin.site.urls),
 ]
 
