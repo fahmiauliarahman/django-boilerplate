@@ -84,3 +84,7 @@ See [Extend the boilerplate](docs/extending.md) for a complete feature walkthrou
 - uv
 - Docker Compose
 - Gunicorn and Nginx
+
+## License
+
+Licensed under the [MIT License](LICENSE).
