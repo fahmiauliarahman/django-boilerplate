@@ -35,11 +35,13 @@ Install Python through [mise](https://mise.jdx.dev/) or your preferred version m
 ```sh
 mise install
 uv sync
+docker compose -f compose.yaml -f compose.local.yaml up -d db mailpit adminer
 uv run python manage.py migrate
 uv run python manage.py runserver
 ```
 
 Open <http://127.0.0.1:8000/>.
+This runs Django on the host with live reload while PostgreSQL, Mailpit, and Adminer run in containers.
 
 Create an administrator when needed:
 

@@ -12,6 +12,26 @@ Choose Docker Compose or a native host deployment.
 
 Always combine the shared file with exactly one environment-specific file.
 
+## Local Development
+
+Run infrastructure in containers while Django runs on the host with live reload:
+
+```sh
+docker compose -f compose.yaml -f compose.local.yaml up -d db mailpit adminer
+make migrate
+make run
+```
+
+PostgreSQL is available at `127.0.0.1:5432`, Mailpit at <http://localhost:8025>, and Adminer at <http://localhost:8080>.
+Use `127.0.0.1` as `POSTGRES_HOST` in `.env`.
+The containerized `web` service overrides that value with `db` automatically.
+
+Stop local infrastructure with:
+
+```sh
+docker compose -f compose.yaml -f compose.local.yaml stop db mailpit adminer
+```
+
 ## Local Production Simulation
 
 This mode runs the production image, Gunicorn, PostgreSQL, Nginx, HTTPS redirects, and Django production security settings.
@@ -31,6 +51,8 @@ docker compose -f compose.yaml -f compose.local.yaml up --build -d
 
 Open `https://localhost:8000` and accept the self-signed certificate warning.
 Nginx terminates TLS and proxies requests to Gunicorn without requiring Nginx or OpenSSL on the host.
+Adminer is available at <http://localhost:8080> with `db` as the database server.
+Use the PostgreSQL credentials from `.env` to sign in.
 
 View logs or stop the local stack:
 
