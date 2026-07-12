@@ -10,7 +10,7 @@ This template provides a practical Django foundation for local development and p
 - **Fast local setup.** Install locked dependencies with uv, use PostgreSQL from day one, and run common tasks through a small Makefile.
 - **Deployment flexibility.** Ship with Docker Compose or deploy directly to a Linux host with systemd.
 - **Storage that can grow.** Keep uploads on local disk or switch to Amazon S3, Cloudflare R2, MinIO, or another S3-compatible service through environment configuration.
-- **Email without provider lock-in.** Develop against Mailpit and use any SMTP provider in production.
+- **Cache and email without provider lock-in.** Select local memory or Redis caching and console, disabled, or SMTP email through environment configuration.
 - **A scalable project layout.** Organize features as package-based modules without speculative service, repository, or utility layers.
 - **Confidence by default.** CI checks Django configuration, tests, migrations, Compose configuration, and the production image on every change.
 
@@ -21,7 +21,8 @@ This template provides a practical Django foundation for local development and p
 - Django Unfold admin interface
 - Gunicorn, Nginx, WhiteNoise, and HTTPS-ready Compose deployment
 - Local and S3-compatible media storage
-- SMTP email and local Mailpit inbox
+- Dummy, local-memory, and Redis cache backends
+- Console, dummy, and SMTP email backends with a local Mailpit inbox
 - Database-aware health check endpoint
 - Structured container logging
 - Starter tests and GitHub Actions CI
@@ -34,14 +35,14 @@ Install Python through [mise](https://mise.jdx.dev/) or your preferred version m
 
 ```sh
 mise install
-uv sync
-docker compose -f compose.yaml -f compose.local.yaml up -d db mailpit adminer
+uv sync --group cache
+docker compose -f compose.yaml -f compose.local.yaml up -d db redis mailpit adminer
 uv run python manage.py migrate
 uv run python manage.py runserver
 ```
 
 Open <http://127.0.0.1:8000/>.
-This runs Django on the host with live reload while PostgreSQL, Mailpit, and Adminer run in containers.
+This runs Django on the host with live reload while PostgreSQL, Redis, Mailpit, and Adminer run in containers.
 
 Create an administrator when needed:
 
@@ -67,13 +68,14 @@ Create a package-based module with:
 make create-app NAME=blog
 ```
 
-The template intentionally leaves product decisions such as APIs, background jobs, caching, and social authentication to your application.
+The template intentionally leaves product decisions such as APIs, background jobs, cache usage, and social authentication to your application.
 
 See [Extend the boilerplate](docs/extending.md) for a complete feature walkthrough.
 
 ## Documentation
 
 - [Deploy with Docker Compose or systemd](docs/deployment.md)
+- [Configure caching](docs/cache.md)
 - [Configure local and production email](docs/email.md)
 - [Extend the boilerplate](docs/extending.md)
 - [Review the boilerplate roadmap](docs/roadmap.md)
@@ -83,6 +85,7 @@ See [Extend the boilerplate](docs/extending.md) for a complete feature walkthrou
 - Python 3.14
 - Django 6.0
 - PostgreSQL 18
+- Redis 8
 - uv
 - Docker Compose
 - Gunicorn and Nginx
