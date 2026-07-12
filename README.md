@@ -14,7 +14,12 @@ This template provides a practical Django foundation for local development and p
 - **A scalable project layout.** Organize features as package-based modules without speculative service, repository, or utility layers.
 - **Confidence by default.** CI checks Django configuration, tests, migrations, Compose configuration, and the production image on every change.
 
-## Included
+
+## Documentation
+
+Browse the [GitHub Wiki](https://github.com/fahmiauliarahman/django-boilerplate/wiki) for guided documentation for new and experienced Django developers.
+
+## What's Included in the Stack
 
 - Python 3.14, Django 6.0, and PostgreSQL 18
 - uv dependency management with a committed lockfile
@@ -34,6 +39,7 @@ This template provides a practical Django foundation for local development and p
 Install Python through [mise](https://mise.jdx.dev/) or your preferred version manager, then run:
 
 ```sh
+cp .env.example .env
 mise install
 uv sync --group cache
 docker compose -f compose.yaml -f compose.local.yaml up -d db redis mailpit adminer
@@ -71,14 +77,6 @@ make create-app NAME=blog
 The template intentionally leaves product decisions such as APIs, background jobs, cache usage, and social authentication to your application.
 
 See [Extend the boilerplate](docs/extending.md) for a complete feature walkthrough.
-
-## Documentation
-
-- [Deploy with Docker Compose or systemd](docs/deployment.md)
-- [Configure caching](docs/cache.md)
-- [Configure local and production email](docs/email.md)
-- [Extend the boilerplate](docs/extending.md)
-- [Review the boilerplate roadmap](docs/roadmap.md)
 
 ## Stack
 

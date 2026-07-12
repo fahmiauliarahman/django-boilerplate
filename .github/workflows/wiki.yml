@@ -1,0 +1,53 @@
+name: Publish Wiki
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/wiki.yml
+      - docs/**
+      - wiki/**
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-wiki
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Clone wiki
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: git clone "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" published-wiki
+
+      - name: Build wiki
+        run: |
+          git -C published-wiki rm -rf .
+          cp wiki/Home.md published-wiki/Home.md
+          cp wiki/Quick-Start.md published-wiki/Quick-Start.md
+          cp wiki/Architecture.md published-wiki/Architecture.md
+          cp wiki/_Sidebar.md published-wiki/_Sidebar.md
+          cp docs/extending.md published-wiki/Extending-the-Boilerplate.md
+          cp docs/cache.md published-wiki/Cache.md
+          cp docs/email.md published-wiki/Email.md
+          cp docs/deployment.md published-wiki/Deployment.md
+          cp docs/roadmap.md published-wiki/Roadmap.md
+
+      - name: Publish changes
+        working-directory: published-wiki
+        run: |
+          git add .
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git commit -m "docs: sync wiki from ${GITHUB_SHA::7}"
+          git push origin HEAD
