@@ -16,6 +16,9 @@ dependencies = [
 ]
 
 [dependency-groups]
+cache = [
+    "redis>=8.0.1",
+]
 dev = [
     "django-debug-toolbar>=7.0.0",
 ]

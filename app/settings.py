@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 
 import environ
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,6 +27,9 @@ env = environ.Env(
     AWS_S3_ENDPOINT_URL=(str, None),
     ALLOWED_HOSTS=(list, ["localhost", "127.0.0.1"]),
     CSRF_TRUSTED_ORIGINS=(list, []),
+    CACHE_BACKEND=(str, "dummy"),
+    CACHE_URL=(str, ""),
+    EMAIL_BACKEND=(str, "smtp"),
     EMAIL_HOST=(str, "localhost"),
     EMAIL_PORT=(int, 1025),
     EMAIL_HOST_USER=(str, ""),
@@ -189,6 +193,30 @@ LOGGING = {
     },
 }
 
+CACHE_BACKEND = env("CACHE_BACKEND")
+CACHE_BACKENDS = {
+    "dummy": "django.core.cache.backends.dummy.DummyCache",
+    "locmem": "django.core.cache.backends.locmem.LocMemCache",
+    "redis": "django.core.cache.backends.redis.RedisCache",
+}
+
+try:
+    cache_backend = CACHE_BACKENDS[CACHE_BACKEND]
+except KeyError:
+    raise ImproperlyConfigured(
+        f"Unsupported CACHE_BACKEND: {CACHE_BACKEND}. Choose dummy, locmem, or redis."
+    ) from None
+
+CACHES = {
+    "default": {
+        "BACKEND": cache_backend,
+        "LOCATION": env("CACHE_URL") if CACHE_BACKEND == "redis" else "default",
+    }
+}
+
+if CACHE_BACKEND == "redis" and not CACHES["default"]["LOCATION"]:
+    raise ImproperlyConfigured("CACHE_URL is required when CACHE_BACKEND=redis.")
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
@@ -203,7 +231,20 @@ STATICFILES_BACKEND = (
 
 ADMINS = [(env("ADMIN_NAME"), env("ADMIN_EMAIL"))]
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_BACKENDS = {
+    "console": "django.core.mail.backends.console.EmailBackend",
+    "dummy": "django.core.mail.backends.dummy.EmailBackend",
+    "smtp": "django.core.mail.backends.smtp.EmailBackend",
+}
+
+email_backend = env("EMAIL_BACKEND")
+try:
+    EMAIL_BACKEND = EMAIL_BACKENDS[email_backend]
+except KeyError:
+    raise ImproperlyConfigured(
+        f"Unsupported EMAIL_BACKEND: {email_backend}. Choose console, dummy, or smtp."
+    ) from None
+
 EMAIL_HOST = env("EMAIL_HOST")
 EMAIL_PORT = env("EMAIL_PORT")
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
@@ -212,6 +253,9 @@ EMAIL_USE_TLS = env("EMAIL_USE_TLS")
 EMAIL_USE_SSL = env("EMAIL_USE_SSL")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
 SITE_URL = env("SITE_URL").rstrip("/")
+
+if email_backend == "smtp" and EMAIL_USE_TLS and EMAIL_USE_SSL:
+    raise ImproperlyConfigured("EMAIL_USE_TLS and EMAIL_USE_SSL cannot both be enabled.")
 
 STORAGE_PROVIDER = env("STORAGE_PROVIDER")
 

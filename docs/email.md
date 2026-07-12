@@ -1,6 +1,22 @@
 # Email
 
-Django uses its built-in SMTP backend for local and production email delivery.
+Django's email API is always available, while `EMAIL_BACKEND` selects delivery behavior.
+Application code should use `django.core.mail` and should not inspect the selected backend.
+
+Supported modes are:
+
+```dotenv
+# Write messages to stdout
+EMAIL_BACKEND=console
+
+# Discard messages
+EMAIL_BACKEND=dummy
+
+# Deliver through configured SMTP server
+EMAIL_BACKEND=smtp
+```
+
+Tests use Django's in-memory backend through `override_settings`.
 No provider-specific package is required.
 
 ## Local Mailpit
@@ -13,6 +29,7 @@ docker compose -f compose.yaml -f compose.local.yaml up --build -d
 
 Mailpit accepts SMTP on port 1025 and provides its inbox at <http://localhost:8025>.
 Messages are captured locally and are not delivered to real recipients.
+The local Compose override selects `EMAIL_BACKEND=smtp` automatically.
 
 Send a test message through Django:
 
@@ -29,6 +46,7 @@ Use any provider that exposes SMTP credentials, including Amazon SES, Mailgun, P
 Configure `.env` using values supplied by the provider:
 
 ```dotenv
+EMAIL_BACKEND=smtp
 EMAIL_HOST=smtp.example.com
 EMAIL_PORT=587
 EMAIL_HOST_USER=<smtp-username>

@@ -24,7 +24,7 @@ CMD [".venv/bin/python", "manage.py", "runserver", "0.0.0.0:8001"]
 
 FROM base AS production
 
-RUN uv sync --frozen --no-dev --group prod
+RUN uv sync --frozen --no-dev --group prod --group cache
 
 COPY . .
 

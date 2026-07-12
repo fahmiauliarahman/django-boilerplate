@@ -17,19 +17,19 @@ Always combine the shared file with exactly one environment-specific file.
 Run infrastructure in containers while Django runs on the host with live reload:
 
 ```sh
-docker compose -f compose.yaml -f compose.local.yaml up -d db mailpit adminer
+docker compose -f compose.yaml -f compose.local.yaml up -d db redis mailpit adminer
 make migrate
 make run
 ```
 
-PostgreSQL is available at `127.0.0.1:5432`, Mailpit at <http://localhost:8025>, and Adminer at <http://localhost:8080>.
+PostgreSQL is available at `127.0.0.1:5432`, Redis at `127.0.0.1:6379`, Mailpit at <http://localhost:8025>, and Adminer at <http://localhost:8080>.
 Use `127.0.0.1` as `POSTGRES_HOST` in `.env`.
 The containerized `web` service overrides that value with `db` automatically.
 
 Stop local infrastructure with:
 
 ```sh
-docker compose -f compose.yaml -f compose.local.yaml stop db mailpit adminer
+docker compose -f compose.yaml -f compose.local.yaml stop db redis mailpit adminer
 ```
 
 ## Local Production Simulation
